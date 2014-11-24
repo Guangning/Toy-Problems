@@ -33,10 +33,12 @@ def dummy_monkey_try_n_times(target_sentence, number_of_times):
         if score > best_score:
             best_score = score
             best_sentence = random_sentence
+    print ''
     print 'Dummy monkey has tried %d times:' % number_of_times
     print 'Orig sentence is: %s'             % target_sentence
     print 'Best sentence is: %s'             % best_sentence
     print 'Best score is: %d/%d characters'  % (best_score, len(target_sentence))
+    print ''
     return best_sentence
 
 def smart_monkey_typing(best_sentence_so_far, target_sentence):
@@ -58,16 +60,19 @@ def smart_monkey_try_n_times(target_sentence, number_of_times):
     for i in range(number_of_times):
         best_sentence = smart_monkey_typing(best_sentence, target_sentence)
         best_score = compare_two_sentences(best_sentence, target_sentence)
+    print ''
     print 'Smart monkey has tried %d times:' % number_of_times
     print 'Orig sentence is: %s'             % target_sentence
     print 'Best sentence is: %s'             % best_sentence
     print 'Best score is: %d/%d characters'  % (best_score, len(target_sentence))
+    print ''
     return best_sentence
 
 def main():
-    target_sentence = 'holy'
-    dummy_monkey_try_n_times(target_sentence, 100)
-    smart_monkey_try_n_times(target_sentence, 100)
+    target_sentence = input('Please enter the sentence you want: ')
+    number_of_times = input('Please enter how many times you want the monkey to try: ')
+    dummy_monkey_try_n_times(target_sentence, int(number_of_times))
+    smart_monkey_try_n_times(target_sentence, int(number_of_times))
 
 if __name__ == '__main__':
     main()
