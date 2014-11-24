@@ -5,7 +5,6 @@
 # given text, such as the complete works of William Shakespeare.
 
 import random
-import string
 
 def dummy_monkey_typing(target_sentence):
     letters = 'abcdefghijklmnopqrstuvwxyz '
