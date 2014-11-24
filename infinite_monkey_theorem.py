@@ -1,87 +1,74 @@
-word_list = ['cat', 'dog', 'rabbit']
-letter_list = []
+#!/usr/bin/env python
 
-#for word in word_list:
-#    for letter in word:
-#        if letter not in letter_list:
-#            letter_list.append(letter)
-
-#letter_list = list(set([c for c in ''.join(word_list)]))
-#
-#print letter_list
-
-import math
-
-#number = input('Please enter a number: ')
-
-#try:
-#    print math.sqrt(number)
-#except:
-#    print 'Bad value for square root'
-
-#if number < 0:
-#    raise RuntimeError('You cant use a negative number!')
-#else:
-#    print math.sqrt(number)
-#
-#print 'Hello, world!'
-
-def square_root(n):
-    iteration = 20   # times of iteration
-    root = n / 2.0   # first guess
-
-    for k in range(iteration):
-        root = (1.0 / 2.0) * (root + (n / root))
-    return root
-
-#print square_root(number)
+# The infinite monkey theorem states that a monkey hittig keys at random on a 
+# typewriter keyboard for an infinite amount of time will almost surely type a 
+# given text, such as the complete works of William Shakespeare.
 
 import random
 import string
 
-
-def gen_random_string(n):
+def dummy_monkey_typing(target_sentence):
     letters = 'abcdefghijklmnopqrstuvwxyz '
-    sentence = ''
-    for i in range(n):
-        sentence = sentence + random.choice(letters)
-    return sentence
+    length_of_sentence = len(target_sentence)
+    random_sentence = ''
+    for i in range(length_of_sentence):
+        random_sentence = random_sentence + random.choice(letters)
+    return random_sentence
 
-def eval_random_string(random, target):
+def compare_two_sentences(random_sentence, target_sentence):
+    if len(random_sentence) != len(target_sentence):
+        raise RuntimeError('Please compare two sentences of the same length!')
     score = 0.0
-    for i in range(len(target)):
-        if random[i] == target[i]:
+    for i in range(len(target_sentence)):
+        if random_sentence[i] == target_sentence[i]:
             score += 1.0
-    #print 'random sentence is: %s' % random
-    #print 'target sentence is: %s' % target
-    #print 'score is: %.0f'         % score
-    return score
+    return int(score)
 
-def try_n_times(times):
-    target = 'methink it is like a weasel'
-    best_string = ''
+def dummy_monkey_try_n_times(target_sentence, number_of_times):
+    best_sentence = ''
     best_score = 0.0
-    for i in range(times):
-        random = gen_random_string(len(target))
-        score = eval_random_string(random, target)
+    for i in range(number_of_times):
+        random_sentence = dummy_monkey_typing(target_sentence)
+        score = compare_two_sentences(random_sentence, target_sentence)
         if score > best_score:
             best_score = score
-            best_string = random
-    print 'orig sentence is: %s' % target
-    print 'best sentence is: %s' % best_string
-    print 'best score is: %.0f'  % best_score
-    return best_string
+            best_sentence = random_sentence
+    print 'Dummy monkey has tried %d times:' % number_of_times
+    print 'Orig sentence is: %s'             % target_sentence
+    print 'Best sentence is: %s'             % best_sentence
+    print 'Best score is: %d/%d characters'  % (best_score, len(target_sentence))
+    return best_sentence
 
-def find_the_best_string():
-    target = 'methi'
-    score = 0.0
-    times = 0.0
-    while score != len(target):
-        random = gen_random_string(len(target))
-        score = eval_random_string(random, target)
-        times += 1.0
-    print 'it used %.0f time to find the best string' % times
+def smart_monkey_typing(best_sentence_so_far, target_sentence):
+    if len(best_sentence_so_far) != len(target_sentence):
+        raise RuntimeError('Smart monkey needs two sentences of the same length!')
+    letters = 'abcdefghijklmnopqrstuvwxyz '
+    length_of_sentence = len(target_sentence)
+    random_sentence = ''
+    for i in range(length_of_sentence):
+        if best_sentence_so_far[i] == target_sentence[i]:
+            random_sentence = random_sentence + target_sentence[i]
+        else:
+            random_sentence = random_sentence + random.choice(letters)
+    return random_sentence
 
-try_n_times(10000)
-find_the_best_string()
+def smart_monkey_try_n_times(target_sentence, number_of_times):
+    best_sentence = dummy_monkey_typing(target_sentence)
+    best_score = 0.0
+    for i in range(number_of_times):
+        best_sentence = smart_monkey_typing(best_sentence, target_sentence)
+        best_score = compare_two_sentences(best_sentence, target_sentence)
+    print 'Smart monkey has tried %d times:' % number_of_times
+    print 'Orig sentence is: %s'             % target_sentence
+    print 'Best sentence is: %s'             % best_sentence
+    print 'Best score is: %d/%d characters'  % (best_score, len(target_sentence))
+    return best_sentence
+
+def main():
+    target_sentence = 'holy'
+    dummy_monkey_try_n_times(target_sentence, 100)
+    smart_monkey_try_n_times(target_sentence, 100)
+
+if __name__ == '__main__':
+    main()
 
