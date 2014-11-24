@@ -54,9 +54,10 @@ def smart_monkey_typing(best_sentence_so_far, target_sentence):
     return random_sentence
 
 def smart_monkey_try_n_times(target_sentence, number_of_times):
+    # first guess
     best_sentence = dummy_monkey_typing(target_sentence)
     best_score = 0.0
-    for i in range(number_of_times):
+    for i in range(number_of_times - 1):
         best_sentence = smart_monkey_typing(best_sentence, target_sentence)
         best_score = compare_two_sentences(best_sentence, target_sentence)
     print ''
