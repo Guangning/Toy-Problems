@@ -10,7 +10,7 @@
 
 # This program will input a list of names and a constant, call it "magic_number"
 # to be used for counting. It will return the name of the last person remaining
-# after repetitive counting by num.
+# after repetitive counting by the magic number.
 
 class DeathCircle:
 
