@@ -2,6 +2,7 @@
 
 import os
 import requests
+from datetime import datetime, date
 from bs4 import BeautifulSoup
 
 def get_the_teams():
@@ -37,33 +38,63 @@ def get_the_games():
 
     year = 2015
 
+    match_list = []
     with open(TEAM_LIST, 'rb') as team_list:
         for rec in team_list:
-
             team = rec.strip().split(',')
+            this_team = team[1]
             team_game_url = BASE_URL.format(team[1],year,team[2])
-
-            table = BeautifulSoup(requests.get(team_game_url).text, "lxml").table # Get the first table
+            # Get the first table
+            table = BeautifulSoup(requests.get(team_game_url).text, "lxml").table
             rows = table.find_all('tr')
             for row in rows:
                 columns = row.find_all('td')
                 try:
-                    _home = True if columns[1].li.text == 'vs' else False
-                    _other_team = columns[1]
-                    print columns[1].find_all('a')[1].text
+                    is_home = True if columns[1].find_all('li')[0].text == 'vs' else False
+                    is_won = True if columns[2].find_all('li')[0].text == 'W' else False
+                    other_team = columns[1].find_all('a')[0]['href'].split('/')[-2]
+                    match_date = datetime.strptime(columns[0].text, '%a, %b %d')
+                    score = columns[2].find_all('li')[1].text.split(' ')[0].split('-')
+                    ot = columns[2].find_all('li')[1].text.split(' ')[1] if len(columns[2].find_all('li')[1].text.split(' ')) > 1 else ''
+                    match_id = columns[2].find_all('li')[1].find_all('a')[0]['href'].split('?id=')[1]
+
+                    home_team = this_team if is_home else other_team
+                    visit_team = other_team if is_home else this_team
+
+                    if is_home:
+                        if is_won:
+                            home_score = score[0]
+                            visit_score = score[1]
+                        else:
+                            home_score = score[1]
+                            visit_score = score[0]
+                    else:
+                        if is_won:
+                            home_score = score[1]
+                            visit_score = score[0]
+                        else:
+                            home_score = score[0]
+                            visit_score = score[1]
+
+                    if match_date.month >= 9:
+                        match_dt = date(year-1, match_date.month, match_date.day)
+                    else:
+                        match_dt = date(year, match_date.month, match_date.day)
+
+                    match_list.append([match_id, str(match_dt), home_team, visit_team, home_score, visit_score, ot])
+
                 except Exception as e:
                     pass
 
-    #soup = BeautifulSoup(requests.get(url).text)
-    #matches = soup.find_all('table', class_='tablehead')
-    #for match in matches:
-    #    list = match.find_all('ul', class_='game_schedule')
-    #    for i in list:
-    #        print i
+    with open(MATCH_LIST, 'w') as output_file:
+        for match in match_list:
+            output_file.write(','.join(match) + '\n')
+
 
 if __name__ == '__main__':
 
     TEAM_LIST = '/home/devuser/Documents/scraper/team.csv'
-    get_the_teams()
-    #get_the_games()
+    MATCH_LIST = '/home/devuser/Documents/scraper/match.csv'
 
+    get_the_teams()
+    get_the_games()
