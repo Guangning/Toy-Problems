@@ -1,0 +1,69 @@
+#!/usr/bin/python
+
+import os
+import requests
+from bs4 import BeautifulSoup
+
+def get_the_teams():
+
+    print "> Get the teams..."
+
+    url = 'http://espn.go.com/nba/teams'
+    r = requests.get(url)
+    soup = BeautifulSoup(r.text, "lxml")
+
+    team_list = []
+    regions = soup.find_all('ul', class_='medium-logos')
+    for region in regions:
+        teams = region.find_all('li')
+        for team in teams:
+            info = team.h5.a
+            team_name = info.text
+            team_url = info['href']
+            team_short_name1 = info['href'].split('/')[-2]
+            team_short_name2 = info['href'].split('/')[-1]
+            team_list.append([team_name, team_short_name1, team_short_name2, team_url])
+
+    with open(TEAM_LIST, 'w') as output_file:
+        for team in team_list:
+            output_file.write(','.join(team) + '\n')
+
+
+def get_the_games():
+
+    print "> Get the games..."
+
+    BASE_URL = 'http://espn.go.com/nba/team/schedule/_/name/{0}/year/{1}/{2}'
+
+    year = 2015
+
+    with open(TEAM_LIST, 'rb') as team_list:
+        for rec in team_list:
+
+            team = rec.strip().split(',')
+            team_game_url = BASE_URL.format(team[1],year,team[2])
+
+            table = BeautifulSoup(requests.get(team_game_url).text, "lxml").table # Get the first table
+            rows = table.find_all('tr')
+            for row in rows:
+                columns = row.find_all('td')
+                try:
+                    _home = True if columns[1].li.text == 'vs' else False
+                    _other_team = columns[1]
+                    print columns[1].find_all('a')[1].text
+                except Exception as e:
+                    pass
+
+    #soup = BeautifulSoup(requests.get(url).text)
+    #matches = soup.find_all('table', class_='tablehead')
+    #for match in matches:
+    #    list = match.find_all('ul', class_='game_schedule')
+    #    for i in list:
+    #        print i
+
+if __name__ == '__main__':
+
+    TEAM_LIST = '/home/devuser/Documents/scraper/team.csv'
+    get_the_teams()
+    #get_the_games()
+
