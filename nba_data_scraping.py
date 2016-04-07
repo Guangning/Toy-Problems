@@ -91,6 +91,54 @@ def get_the_games():
             output_file.write(','.join(match) + '\n')
 
 
+def get_the_boxscore(match_id):
+
+    print "> Get the boxscore of game %s..." % match_id
+
+    BASE_URL = 'http://espn.go.com/nba/boxscore?gameId={0}'
+    url = BASE_URL.format(match_id)
+    r = requests.get(url)
+    soup = BeautifulSoup(r.text, "lxml")
+
+    tables = soup.find_all('table', class_='mod-data')
+    away_table = tables[0]
+    home_table = tables[1]
+
+    rows = away_table.find_all('tr')
+    for row in rows:
+        try:
+            th = row.find_all('th')
+            is_starter = True if th[0].text == 'starters' else False
+        except Exception:
+            pass
+
+        try:
+            td = row.find_all('td')
+            player_name = td[0].find_all('a')[0].text
+            player_id = td[0].find_all('a')[0]['href'].split('/')[-1]
+            position = td[0].find_all('span')[0].text
+            starter_ind = 'Y' if is_starter else 'N'
+            min = td[1].text
+            fg = td[2].text
+            _3pt = td[3].text
+            ft = td[4].text
+            #td[5].text
+            #td[6].text
+            #td[7].text
+            #td[8].text
+            #td[9].text
+            #td[10].text
+            #td[11].text
+            #td[12].text
+            #td[13].text
+            #td[14].text
+
+            print player_id, player_name, position, starter_ind, min, fg, _3pt, ft
+
+        except Exception:
+            pass
+
+
 if __name__ == '__main__':
 
     TEAM_LIST = '/home/devuser/Documents/scraper/team.csv'
@@ -98,3 +146,4 @@ if __name__ == '__main__':
 
     get_the_teams()
     get_the_games()
+    get_the_boxscore('400578910','ny','no')
