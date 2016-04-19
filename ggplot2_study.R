@@ -39,3 +39,16 @@ reorder_size <- function(x) {
 }
 ggplot(mpg, aes(reorder_size(class))) + geom_bar()
 
+
+# 3.histogram
+
+depth_dist <- ggplot(diamonds, aes(depth)) + xlim(55, 70)
+depth_dist +
+    geom_histogram(aes(y = ..density.., colour = cut), binwidth = 0.1)
+depth_dist +
+    geom_histogram(aes(y = ..density..), binwidth = 0.1) +
+    facet_grid(cut ~ .)
+
+# 4.freqpoly
+depth_dist +
+    geom_freqpoly(aes(y = ..density.., colour = cut), binwidth = 0.1)
